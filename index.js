@@ -29,11 +29,10 @@ title.addEventListener("click", toogleFullScreen);
 button.addEventListener("click", submitFeedback);
 
 function submitFeedback() {
-  button.classList.add("selected");
   effects.style.display = "block";
   thankyou.style.display = "block";
 
-  disableButton();
+
 
   if(usrFeedback === 5){
     manager.addConfetti()
@@ -42,9 +41,8 @@ function submitFeedback() {
   setTimeout(() => {
     title.classList.remove("fadein");
     description.classList.remove("fadein");
-    button.classList.remove("disable");
-    button.classList.remove("selected");
     effects.style.display = "none";
+    // disableButton();
     gotoThankyou();
   }, 1500);
 }
@@ -52,14 +50,14 @@ function submitFeedback() {
 function gotoThankyou() {
   feedback.classList.add("fadeoutleft");
   thankyou.classList.add("fadeinleft");
-
+  disableButton();
   setTimeout(() => {
     feedback.classList.remove("fadeoutleft");
     thankyou.classList.remove("fadeinleft");
     clearEmoji();
+    
     setTimeout(() => {
       thankyou.style.display = "none";
-      disableButton();
     }, 1000);
   }, 3000);
 }
@@ -85,25 +83,26 @@ let usrFeedback = 1;
 
 function selectFeedback(event, feedback) {
   clearEmoji();
-  enableButton();
   event.target.parentElement.getElementsByClassName(
     "emoji-circle"
   )[0].style.opacity = 1;
 
   usrFeedback = feedback;
 
-  
+  enableButton();
 }
 
 function enableButton() {
-  button.style.pointerEvents = "auto";
-  button.classList.remove('disabled');
+  button.classList.add('select');
+  button.classList.remove('disable');
 }
 
 function disableButton() {
-  button.style.pointerEvents = "none";
-  button.classList.add('disabled');
+  button.classList.remove('select');
+  button.classList.add('disable');
 }
+
+disableButton();
 
 function clearEmoji() {
   usrFeedback = 1;
