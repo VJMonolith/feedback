@@ -1,121 +1,5 @@
-document.body.ontouchmove = function (event) {
-  event.stopImmediatePropagation();
-  event.stopPropagation();
-  event.preventDefault();
-};
 
-let title = document.getElementsByClassName("title")[0];
-let description = document.getElementsByClassName("description")[0];
-let content = document.getElementsByClassName("content")[0];
-
-let button = document.getElementsByClassName("button")[0];
-let effects = document.getElementsByClassName("effects")[0];
-
-let feedback = document.getElementsByClassName("feedback")[0];
-let thankyou = document.getElementsByClassName("thankyou")[0];
-
-let emojies = [];
-
-for (var i = 0; i < 5; i++) {
-  let emoji = document.getElementsByClassName("emoji-item")[i];
-  emojies.push(emoji);
-  setTimeout(() => {
-    emoji.classList.add("fadeup");
-  }, i * 100);
-}
-
-title.addEventListener("click", toogleFullScreen);
-
-button.addEventListener("click", submitFeedback);
-
-function submitFeedback() {
-  effects.style.display = "block";
-  thankyou.style.display = "block";
-
-
-
-  if(usrFeedback === 5){
-    manager.addConfetti()
-  }
-
-  setTimeout(() => {
-    title.classList.remove("fadein");
-    description.classList.remove("fadein");
-    effects.style.display = "none";
-    // disableButton();
-    gotoThankyou();
-  }, 1500);
-}
-
-function gotoThankyou() {
-  feedback.classList.add("fadeoutleft");
-  thankyou.classList.add("fadeinleft");
-  disableButton();
-  setTimeout(() => {
-    feedback.classList.remove("fadeoutleft");
-    thankyou.classList.remove("fadeinleft");
-    clearEmoji();
-    
-    setTimeout(() => {
-      thankyou.style.display = "none";
-    }, 1000);
-  }, 3000);
-}
-
-function gotoFeedback() {}
-// feedback.classList.add('fadeinleft');
-
-// gotoFeedback();
-
-function toogleFullScreen() {
-  if (content.requestFullscreen) {
-    content.requestFullscreen();
-  } else if (content.webkitRequestFullscreen) {
-    /* Safari */
-    content.webkitRequestFullscreen();
-  } else if (content.msRequestFullscreen) {
-    /* IE11 */
-    content.msRequestFullscreen();
-  }
-}
-
-let usrFeedback = 1;
-
-function selectFeedback(event, feedback) {
-  clearEmoji();
-  event.target.parentElement.getElementsByClassName(
-    "emoji-circle"
-  )[0].style.opacity = 1;
-
-  usrFeedback = feedback;
-
-  enableButton();
-}
-
-function enableButton() {
-  button.classList.add('select');
-  button.classList.remove('disable');
-}
-
-function disableButton() {
-  button.classList.remove('select');
-  button.classList.add('disable');
-}
-
-disableButton();
-
-function clearEmoji() {
-  usrFeedback = 1;
-  let emojieCircles = document.getElementsByClassName("emoji-circle");
-
-  for (let i = 0; i < emojieCircles.length; i++) {
-    emojieCircles[i].style.opacity = 0;
-  }
-}
-
-
-
-"use strict";
+("use strict");
 
 // Utility functions grouped into a single object
 const Utils = {
@@ -153,7 +37,14 @@ const defaultConfettiConfig = {
   confettiesNumber: 100,
   confettiRadius: 4,
   confettiColors: [
-    "#fcf403", "#62fc03", "#f4fc03", "#03e7fc", "#03fca5", "#a503fc", "#fc03ad", "#fc03c2"
+    "#fcf403",
+    "#62fc03",
+    "#f4fc03",
+    "#03e7fc",
+    "#03fca5",
+    "#a503fc",
+    "#fc03ad",
+    "#fc03c2",
   ],
   emojies: [],
   svgIcon: null, // Example SVG link
@@ -162,25 +53,37 @@ const defaultConfettiConfig = {
 // Confetti class representing individual confetti pieces
 class Confetti {
   constructor({ initialPosition, direction, radius, colors, emojis, svgIcon }) {
-    const speedFactor = Utils.getRandomInRange(0.9, 1.7, 3) * Utils.getScaleFactor();
+    const speedFactor =
+      Utils.getRandomInRange(0.9, 1.7, 3) * Utils.getScaleFactor();
     this.speed = { x: speedFactor, y: speedFactor };
     this.finalSpeedX = Utils.getRandomInRange(0.2, 0.6, 3);
-    this.rotationSpeed = emojis.length || svgIcon ? 0.01 : Utils.getRandomInRange(0.03, 0.07, 3) * Utils.getScaleFactor();
+    this.rotationSpeed =
+      emojis.length || svgIcon
+        ? 0.01
+        : Utils.getRandomInRange(0.03, 0.07, 3) * Utils.getScaleFactor();
     this.dragCoefficient = Utils.getRandomInRange(0.0005, 0.0009, 6);
     this.radius = { x: radius, y: radius };
     this.initialRadius = radius;
-    this.rotationAngle = direction === "left" ? Utils.getRandomInRange(0, 0.2, 3) : Utils.getRandomInRange(-0.2, 0, 3);
+    this.rotationAngle =
+      direction === "left"
+        ? Utils.getRandomInRange(0, 0.2, 3)
+        : Utils.getRandomInRange(-0.2, 0, 3);
     this.emojiRotationAngle = Utils.getRandomInRange(0, 2 * Math.PI);
     this.radiusYDirection = "down";
 
-    const angle = direction === "left" ? Utils.getRandomInRange(82, 15) * DEG_TO_RAD : Utils.getRandomInRange(-15, -82) * DEG_TO_RAD;
+    const angle =
+      direction === "left"
+        ? Utils.getRandomInRange(82, 15) * DEG_TO_RAD
+        : Utils.getRandomInRange(-15, -82) * DEG_TO_RAD;
     this.absCos = Math.abs(Math.cos(angle));
     this.absSin = Math.abs(Math.sin(angle));
 
     const offset = Utils.getRandomInRange(-150, 0);
     const position = {
-      x: initialPosition.x + (direction === "left" ? -offset : offset) * this.absCos,
-      y: initialPosition.y - offset * this.absSin
+      x:
+        initialPosition.x +
+        (direction === "left" ? -offset : offset) * this.absCos,
+      y: initialPosition.y - offset * this.absSin,
     };
 
     this.position = { ...position };
@@ -211,12 +114,26 @@ class Confetti {
       context.save();
       context.translate(scale * x, scale * y);
       context.rotate(this.emojiRotationAngle);
-      context.drawImage(this.svgIcon, -radiusX, -radiusY, radiusX * 2, radiusY * 2);
+      context.drawImage(
+        this.svgIcon,
+        -radiusX,
+        -radiusY,
+        radiusX * 2,
+        radiusY * 2
+      );
       context.restore();
     } else if (this.color) {
       context.fillStyle = this.color;
       context.beginPath();
-      context.ellipse(x * scale, y * scale, radiusX * scale, radiusY * scale, this.rotationAngle, 0, 2 * Math.PI);
+      context.ellipse(
+        x * scale,
+        y * scale,
+        radiusX * scale,
+        radiusY * scale,
+        this.rotationAngle,
+        0,
+        2 * Math.PI
+      );
       context.fill();
     } else if (this.emoji) {
       context.font = `${radiusX * scale}px serif`;
@@ -236,8 +153,14 @@ class Confetti {
       this.speed.x -= this.dragCoefficient * deltaTime;
     }
 
-    this.position.x += this.speed.x * (this.direction === "left" ? -this.absCos : this.absCos) * deltaTime;
-    this.position.y = this.initialPosition.y - this.speed.y * this.absSin * elapsed + 0.00125 * Math.pow(elapsed, 2) / 2;
+    this.position.x +=
+      this.speed.x *
+      (this.direction === "left" ? -this.absCos : this.absCos) *
+      deltaTime;
+    this.position.y =
+      this.initialPosition.y -
+      this.speed.y * this.absSin * elapsed +
+      (0.00125 * Math.pow(elapsed, 2)) / 2;
 
     if (!this.emoji && !this.svgIcon) {
       this.rotationSpeed -= 1e-5 * deltaTime;
@@ -267,12 +190,16 @@ class Confetti {
 class ConfettiManager {
   constructor() {
     this.canvas = document.createElement("canvas");
-    this.canvas.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; pointer-events: none;";
-    document.body.getElementsByClassName('content')[0].appendChild(this.canvas);
+    this.canvas.style =
+      "position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; pointer-events: none;";
+    document.body.getElementsByClassName("content")[0].appendChild(this.canvas);
     this.context = this.canvas.getContext("2d");
     this.confetti = [];
     this.lastUpdated = Date.now();
-    window.addEventListener("resize", Utils.debounce(() => this.resizeCanvas(), 200));
+    window.addEventListener(
+      "resize",
+      Utils.debounce(() => this.resizeCanvas(), 200)
+    );
     this.resizeCanvas();
     requestAnimationFrame(() => this.loop());
   }
@@ -283,29 +210,39 @@ class ConfettiManager {
   }
 
   addConfetti(config = {}) {
-    const { confettiesNumber, confettiRadius, confettiColors, emojies, svgIcon } = {
+    const {
+      confettiesNumber,
+      confettiRadius,
+      confettiColors,
+      emojies,
+      svgIcon,
+    } = {
       ...defaultConfettiConfig,
       ...config,
     };
 
     const baseY = (5 * window.innerHeight) / 7;
     for (let i = 0; i < confettiesNumber / 2; i++) {
-      this.confetti.push(new Confetti({
-        initialPosition: { x: 0, y: baseY },
-        direction: "right",
-        radius: confettiRadius,
-        colors: confettiColors,
-        emojis: emojies,
-        svgIcon,
-      }));
-      this.confetti.push(new Confetti({
-        initialPosition: { x: window.innerWidth, y: baseY },
-        direction: "left",
-        radius: confettiRadius,
-        colors: confettiColors,
-        emojis: emojies,
-        svgIcon,
-      }));
+      this.confetti.push(
+        new Confetti({
+          initialPosition: { x: 0, y: baseY },
+          direction: "right",
+          radius: confettiRadius,
+          colors: confettiColors,
+          emojis: emojies,
+          svgIcon,
+        })
+      );
+      this.confetti.push(
+        new Confetti({
+          initialPosition: { x: window.innerWidth, y: baseY },
+          direction: "left",
+          radius: confettiRadius,
+          colors: confettiColors,
+          emojis: emojies,
+          svgIcon,
+        })
+      );
     }
   }
 
@@ -333,15 +270,322 @@ class ConfettiManager {
   }
 }
 
+
+// Declaration of elements
+
+let title = document.getElementsByClassName("title")[0];
+let description = document.getElementsByClassName("description")[0];
+let content = document.getElementsByClassName("content")[0];
+let feedbackBtn = document.getElementById("feedbackBtn");
+let downloadBtn = document.getElementById("downloadBtn");
+let effects = document.getElementsByClassName("effects")[0];
+let feedback = document.getElementsByClassName("feedback")[0];
+let thankyou = document.getElementsByClassName("thankyou")[0];
+let pin = document.getElementsByClassName("pin")[0];
+let emojies = [];
+let userPin = [0, 0, 0, 0];
+let currentPin = [];
+var onlongtouch;
+var timer;
+var touchduration = 3000;
+let usrFeedback = 1;
+const dbName = 'feedbacks';
+let db;
+let notes = '';
+let notesInput = document.getElementsByClassName("notes-input")[0];
+
 const manager = new ConfettiManager();
-// manager.addConfetti();
 
-// const triggerButton = document.getElementById("show-again");
-// if (triggerButton) {
-//   triggerButton.addEventListener("click", () => manager.addConfetti());
-// }
+// const feedbackData = [
+//   { date: new Date("Mon Jan 27 2025 16:34:24 GMT+0530 (India Standard Time)"), feedback: 4, note: "" },
+//   { date: new Date("Mon Jan 27 2025 16:34:24 GMT+0530 (India Standard Time)"), feedback: 2, note: "Can be improved" },
+// ];
 
-// const resetInput = document.getElementById("reset");
-// if (resetInput) {
-//   resetInput.addEventListener("input", () => manager.resetAndStart());
-// }
+//Library functions
+
+function touchstart() {
+  timer = setTimeout(gotoPin, touchduration);
+}
+
+function touchend() {
+  //stops short touches from firing the event
+  if (timer)
+    clearTimeout(timer); // clearTimeout, not cleartimeout..
+}
+
+function gotoPin() {
+  navigation('feedback', 'pin', 'left')
+}
+
+function autoTab(event, current, next) {
+  if (current.value.length === current.maxLength) {
+    next.focus();
+    setPin(event, current);
+  }
+}
+
+function clearEmoji() {
+  usrFeedback = 1;
+  let emojieCircles = document.getElementsByClassName("emoji-circle");
+
+  for (let i = 0; i < emojieCircles.length; i++) {
+    emojieCircles[i].style.opacity = 0;
+  }
+}
+
+function saveFeedback() {
+  const transaction = db.transaction(["feedback"], "readwrite");
+
+  const objectStore = transaction.objectStore("feedback");
+
+  objectStore.add({
+    date: new Date(),
+    feedback: usrFeedback,
+    note: notes
+  });
+
+  transaction.oncomplete = (event) => {
+    console.log("Feedback Added.");
+  };
+}
+
+async function submitFeedback() {
+
+
+
+  saveFeedback();
+
+  await addButtonEffects();
+
+  if (usrFeedback === 4) {
+    manager.addConfetti();
+
+    await navigation('feedback', 'thankyou', 'left');
+
+
+
+    setTimeout(async () => {
+      await navigation('thankyou', 'feedback', 'right');
+      clearEmoji();
+      disableButton(feedbackBtn);
+    }, 3000)
+  } else {
+    await navigation('feedback', 'notes', 'left');
+  }
+
+}
+
+
+function submitFeedbackNotes() {
+  saveFeedback();
+  notesInput.value = '';
+  notes = ''
+  navigation('notes', 'thankyou', 'left');
+
+  setTimeout(() => {
+    navigation('thankyou', 'feedback', 'right');
+    clearEmoji();
+    disableButton(feedbackBtn);
+  }, 3000);
+}
+
+function downloadURI(uri, name) {
+  var link = document.createElement("a");
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  delete link;
+}
+
+
+function downloadFeedback() {
+  const transaction = db.transaction(['feedback'], 'readonly');
+  const store = transaction.objectStore('feedback');
+  const request = store.getAll();
+
+  request.onerror = (res) => {
+    reject(request.error);
+  };
+
+  request.onsuccess = (res) => {
+    if (res.target.result.length) {
+      let resultText = `Date,Time,Feedback,Note\n`
+      res.target.result.forEach((item) => {
+        resultText += `${new Date(item.date).toLocaleDateString()},${new Date(item.date).toLocaleTimeString()},${item.feedback},${item.note}\n`
+      })
+      downloadURI("data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(resultText), "feedback");
+    }
+  };
+
+
+}
+
+function updateNotes(ele) {
+  notes = ele.value;
+  if (notes.length) {
+    enableButton(notesBtn);
+  } else {
+    disableButton(notesBtn);
+  }
+}
+
+
+
+function setPin(event, ele) {
+
+
+
+  let index = ele.getAttribute('index')
+  currentPin[index] = ele.value;
+
+  if (index === '3') {
+    if (userPin.join('') === currentPin.join('')) {
+      enableButton(downloadBtn);
+    } else {
+      disableButton(downloadBtn);
+    }
+  }
+}
+
+function addButtonEffects() {
+  return new Promise((resolve, reject) => {
+    effects.style.display = "block";
+    effects.style.backgroundImage = "url('assets/tech-effect.gif')";
+    setTimeout(() => {
+      effects.style.display = "none";
+      resolve();
+    }, 1000);
+  });
+}
+
+
+function navigation(from, to, direction) {
+  return new Promise((resolve, reject) => {
+    let fromEle = document.getElementsByClassName(from)[0];
+    let toEle = document.getElementsByClassName(to)[0];
+
+    if (direction === 'left') {
+      toEle.classList.remove('hide');
+      fromEle.classList.add('fadeout-left');
+      toEle.classList.add('fadein-right');
+      toEle.classList.add('start-right');
+      setTimeout(() => {
+        toEle.classList.remove('start-right');
+        fromEle.classList.add('hide');
+        resolve();
+      }, 100);
+    } else if (direction === 'right') {
+      toEle.classList.remove('hide');
+      fromEle.classList.add('fadeout-right');
+      toEle.classList.add('fadein-left');
+      toEle.classList.add('start-left');
+      setTimeout(() => {
+        toEle.classList.remove('start-left');
+        fromEle.classList.add('hide');
+        resolve();
+      }, 100);
+    } else {
+      reject('Direction required');
+    }
+  })
+
+}
+
+function selectFeedback(event, feedback) {
+  clearEmoji();
+  event.target.parentElement.getElementsByClassName(
+    "emoji-circle"
+  )[0].style.opacity = 1;
+
+  usrFeedback = feedback;
+
+  enableButton(feedbackBtn);
+}
+
+function feedbackInit() {
+  for (var i = 0; i < 5; i++) {
+    let emoji = document.getElementsByClassName("emoji-item")[i];
+    emojies.push(emoji);
+    setTimeout(() => {
+      if (emoji) {
+        emoji.classList.add("fadein-up");
+      }
+    }, i * 100);
+  }
+
+  disableButton(feedbackBtn)
+}
+
+function init() {
+
+
+  document.body.ontouchmove = function (event) {
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  title.addEventListener("click", toogleFullScreen);
+  feedbackBtn.addEventListener("click", submitFeedback);
+  downloadBtn.addEventListener("click", downloadFeedback);
+  notesBtn.addEventListener("click", submitFeedbackNotes);
+
+  feedbackInit();
+
+  const request = window.indexedDB.open(dbName, 3);
+
+  request.onerror = (event) => {
+    console.log("DB Connection Error");
+  };
+  request.onsuccess = (event) => {
+    console.log("DB Connection Successfull");
+    db = event.target.result;
+  };
+
+  request.onupgradeneeded = (event) => {
+    db = event.target.result;
+    const objectStore = db.createObjectStore("feedback", { keyPath: "no", autoIncrement: true });
+    // objectStore.createIndex("date", "date", { unique: false });
+    // objectStore.createIndex("feedback", "feedback", { unique: false });
+    // objectStore.createIndex("note", "note", { unique: false });
+
+    // objectStore.transaction.oncomplete = (event) => {
+    //   const feedbackObjectStore = db
+    //     .transaction("feedback", "readwrite")
+    //     .objectStore("feedback");
+    //   feedbackData.forEach((feedback) => {
+    //     feedbackObjectStore.add(feedback);
+    //   });
+    // };
+  };
+}
+
+
+
+init();
+
+
+function toogleFullScreen() {
+  if (content.requestFullscreen) {
+    content.requestFullscreen();
+  } else if (content.webkitRequestFullscreen) {
+    /* Safari */
+    content.webkitRequestFullscreen();
+  } else if (content.msRequestFullscreen) {
+    /* IE11 */
+    content.msRequestFullscreen();
+  }
+}
+
+
+function enableButton(ele) {
+  ele.classList.add("select");
+  ele.classList.remove("disable");
+}
+
+function disableButton(ele) {
+  ele.classList.remove("select");
+  ele.classList.add("disable");
+}
